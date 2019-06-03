@@ -17,7 +17,7 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
     <Compile Remove="FactorizationMachine/FactorizationMachineInterface.netstandard.cs" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="$(SystemRuntimeCompilerServices)" />
+    <!-- <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="$(SystemRuntimeCompilerServices)" /> -->
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
