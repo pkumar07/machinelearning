@@ -45,7 +45,8 @@ EXPORT_API(void) CalculateIntermediateVariablesNativeFMA(int fieldCount, int lat
 
         for (int k = 0; k + 8 <= d; k += 8)
         {
-            const __m256 _v = _mm256_load_ps(vjf + k);
+            //const __m256 _v = _mm256_load_ps(vjf + k);
+            const __m256 _v = _mm256_loadu_ps(vjf + k);
             _tmp = _mm256_fnmadd_ps(_mm256_mul_ps(_v, _v), _xx, _tmp);
         }
 
@@ -59,10 +60,13 @@ EXPORT_API(void) CalculateIntermediateVariablesNativeFMA(int fieldCount, int lat
             // q_f,f' += v_j,f' * x
             for (int k = 0; k + 8 <= d; k += 8)
             {
-                const __m256 _v = _mm256_load_ps(vjfprime + k);
-                __m256 _q = _mm256_load_ps(qffprime + k);
+                //const __m256 _v = _mm256_load_ps(vjfprime + k);
+                const __m256 _v = _mm256_loadu_ps(vjfprime + k);
+                //__m256 _q = _mm256_load_ps(qffprime + k);
+                __m256 _q = _mm256_loadu_ps(qffprime + k);
                 _q = _mm256_fmadd_ps(_v, _x, _q);
-                _mm256_store_ps(qffprime + k, _q);
+                //_mm256_store_ps(qffprime + k, _q);
+                _mm256_storeu_ps(qffprime + k, _q);
             }
         }
     }
@@ -73,7 +77,8 @@ EXPORT_API(void) CalculateIntermediateVariablesNativeFMA(int fieldCount, int lat
         const float * qff = pq + f * m * d + f * d;
         for (int k = 0; k + 8 <= d; k += 8)
         {
-            __m256 _qff = _mm256_load_ps(qff + k);
+            //__m256 _qff = _mm256_load_ps(qff + k);
+            __m256 _qff = _mm256_loadu_ps(qff + k);
 
             // Intra-field interactions.
             _tmp = _mm256_fmadd_ps(_qff, _qff, _tmp);
@@ -89,8 +94,10 @@ EXPORT_API(void) CalculateIntermediateVariablesNativeFMA(int fieldCount, int lat
             for (int k = 0; k + 8 <= d; k += 8)
             {
                 // Inter-field interaction.
-                __m256 _qffprime = _mm256_load_ps(qffprime + k);
-                __m256 _qfprimef = _mm256_load_ps(qfprimef + k);
+                // __m256 _qffprime = _mm256_load_ps(qffprime + k);
+                // __m256 _qfprimef = _mm256_load_ps(qfprimef + k);
+                __m256 _qffprime = _mm256_loadu_ps(qffprime + k);
+                __m256 _qfprimef = _mm256_loadu_ps(qfprimef + k);
                 _y = _mm256_fmadd_ps(_qffprime, _qfprimef, _y);
             }
         }
@@ -153,8 +160,10 @@ EXPORT_API(void) CalculateGradientAndUpdateNativeFMA(float lambdaLinear, float l
 
             for (int k = 0; k + 8 <= d; k += 8)
             {
-                __m256 _v = _mm256_load_ps(vjfprime + k);
-                __m256 _q = _mm256_load_ps(qfprimef + k);
+                // __m256 _v = _mm256_load_ps(vjfprime + k);
+                // __m256 _q = _mm256_load_ps(qfprimef + k);
+                __m256 _v = _mm256_loadu_ps(vjfprime + k);
+                __m256 _q = _mm256_loadu_ps(qfprimef + k);
 
                 // Calculate L2-norm regularization's gradient.
                 __m256 _g = _mm256_mul_ps(_lambdav, _v);
@@ -163,16 +172,19 @@ EXPORT_API(void) CalculateGradientAndUpdateNativeFMA(float lambdaLinear, float l
                 if (fprime != f)
                    _g = _mm256_fmadd_ps(_sx, _q, _g);
                 else
-                   _g = _mm256_fmadd_ps(_sx, _mm256_sub_ps(_q, _mm256_mul_ps(_v, _x)), _g);
+                   _g = _mm256_fmadd_ps(_sx, _mm256_sub_ps(_q, _mm256_mul_ps(_v, _x)), _g); //poornima: Add FMA
                 _g = _mm256_mul_ps(_wei, _g);
 
                 // Accumulate the gradient of latent vectors.
-                const __m256 _h = _mm256_fmadd_ps(_g, _g, _mm256_load_ps(hvjfprime + k));
+                //const __m256 _h = _mm256_fmadd_ps(_g, _g, _mm256_load_ps(hvjfprime + k));
+                const __m256 _h = _mm256_fmadd_ps(_g, _g, _mm256_loadu_ps(hvjfprime + k));
 
                 // Perform ADAGRAD update rule to adjust latent vector.
                 _v = _mm256_fnmadd_ps(_lr, _mm256_mul_ps(_mm256_rsqrt_ps(_h), _g), _v);
-                _mm256_store_ps(vjfprime + k, _v);
-                _mm256_store_ps(hvjfprime + k, _h);
+                // _mm256_store_ps(vjfprime + k, _v);
+                // _mm256_store_ps(hvjfprime + k, _h);
+                _mm256_storeu_ps(vjfprime + k, _v);
+                _mm256_storeu_ps(hvjfprime + k, _h);
             }
         }
     }
