@@ -8,7 +8,15 @@
 #include <limits>
 #include <immintrin.h>
 
+<<<<<<< HEAD
 EXPORT_API(void) CalculateIntermediateVariablesNativeAVX(int fieldCount, int latentDim, int count, _In_ int * fieldIndices, _In_ int * featureIndices, _In_ float * featureValues,
+=======
+// This function implements Algorithm 1 in https://github.com/wschin/fast-ffm/blob/master/fast-ffm.pdf.
+// Compute the output value of the field-aware factorization, as the sum of the linear part and the latent part.
+// The linear part is the inner product of linearWeights and featureValues.
+// The latent part is the sum of all intra-field interactions in one field f, for all fields possible.
+EXPORT_API(void) CalculateIntermediateVariablesNativeAvx(int fieldCount, int latentDim, int count, _In_ int * fieldIndices, _In_ int * featureIndices, _In_ float * featureValues,
+>>>>>>> 6c762d87b5a9c19ab2b27312e1f66f1138963038
     _In_ float * linearWeights, _In_ float * latentWeights, _Inout_ float * latentSum, _Out_ float * response)
 {
     // The number of all possible fields.
@@ -111,9 +119,10 @@ EXPORT_API(void) CalculateIntermediateVariablesNativeAVX(int fieldCount, int lat
 
 }
 
+// This function implements Algorithm 2 in https://github.com/wschin/fast-ffm/blob/master/fast-ffm.pdf
 // Calculate the stochastic gradient and update the model.
 // The /*const*/ comment on the parameters of the function means that their values should not get altered by this function.
-EXPORT_API(void) CalculateGradientAndUpdateNativeAVX(float lambdaLinear, float lambdaLatent, float learningRate, int fieldCount, int latentDim, float weight, int count,
+EXPORT_API(void) CalculateGradientAndUpdateNativeAvx(float lambdaLinear, float lambdaLatent, float learningRate, int fieldCount, int latentDim, float weight, int count,
     _In_ int* /*const*/ fieldIndices, _In_ int* /*const*/ featureIndices, _In_ float* /*const*/ featureValues, _In_ float* /*const*/ latentSum, float slope,
     _Inout_ float* linearWeights, _Inout_ float* latentWeights, _Inout_ float* linearAccumulatedSquaredGrads, _Inout_ float* latentAccumulatedSquaredGrads)
 {
@@ -129,7 +138,7 @@ EXPORT_API(void) CalculateGradientAndUpdateNativeAVX(float lambdaLinear, float l
     float * phw = linearAccumulatedSquaredGrads;
     float * phv = latentAccumulatedSquaredGrads;
 
-    const __m256 _wei = _mm256_set1_ps(weight);
+    const __m256 _wei = _mm256_set1_ps(weight); //Check AVX memory alignment; Make it unaligned
     const __m256 _s = _mm256_set1_ps(slope);
     const __m256 _lr = _mm256_set1_ps(learningRate);
     const __m256 _lambdav = _mm256_set1_ps(lambdaLatent);

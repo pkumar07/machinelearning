@@ -8,10 +8,11 @@
 #include <limits>
 #include <pmmintrin.h>
 
+// This function implements Algorithm 1 in https://github.com/wschin/fast-ffm/blob/master/fast-ffm.pdf.
 // Compute the output value of the field-aware factorization, as the sum of the linear part and the latent part.
 // The linear part is the inner product of linearWeights and featureValues.
 // The latent part is the sum of all intra-field interactions in one field f, for all fields possible.
-EXPORT_API(void) CalculateIntermediateVariablesNativeSSE(int fieldCount, int latentDim, int count, _In_ int * fieldIndices, _In_ int * featureIndices, _In_ float * featureValues,
+EXPORT_API(void) CalculateIntermediateVariablesNativeSse(int fieldCount, int latentDim, int count, _In_ int * fieldIndices, _In_ int * featureIndices, _In_ float * featureValues,
     _In_ float * linearWeights, _In_ float * latentWeights, _Inout_ float * latentSum, _Out_ float * response)
 {
     // The number of all possible fields.
@@ -105,9 +106,10 @@ EXPORT_API(void) CalculateIntermediateVariablesNativeSSE(int fieldCount, int lat
     *response = linearResponse + latentResponse;
 }
 
+// This function implements Algorithm 2 in https://github.com/wschin/fast-ffm/blob/master/fast-ffm.pdf
 // Calculate the stochastic gradient and update the model.
 // The /*const*/ comment on the parameters of the function means that their values should not get altered by this function.
-EXPORT_API(void) CalculateGradientAndUpdateNativeSSE(float lambdaLinear, float lambdaLatent, float learningRate, int fieldCount, int latentDim, float weight, int count,
+EXPORT_API(void) CalculateGradientAndUpdateNativeSse(float lambdaLinear, float lambdaLatent, float learningRate, int fieldCount, int latentDim, float weight, int count,
     _In_ int* /*const*/ fieldIndices, _In_ int* /*const*/ featureIndices, _In_ float* /*const*/ featureValues, _In_ float* /*const*/ latentSum, float slope,
     _Inout_ float* linearWeights, _Inout_ float* latentWeights, _Inout_ float* linearAccumulatedSquaredGrads, _Inout_ float* latentAccumulatedSquaredGrads)
 {
