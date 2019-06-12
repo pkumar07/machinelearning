@@ -8,15 +8,11 @@
 #include <limits>
 #include <immintrin.h>
 
-<<<<<<< HEAD
-EXPORT_API(void) CalculateIntermediateVariablesNativeAVX(int fieldCount, int latentDim, int count, _In_ int * fieldIndices, _In_ int * featureIndices, _In_ float * featureValues,
-=======
 // This function implements Algorithm 1 in https://github.com/wschin/fast-ffm/blob/master/fast-ffm.pdf.
 // Compute the output value of the field-aware factorization, as the sum of the linear part and the latent part.
 // The linear part is the inner product of linearWeights and featureValues.
 // The latent part is the sum of all intra-field interactions in one field f, for all fields possible.
 EXPORT_API(void) CalculateIntermediateVariablesNativeAvx(int fieldCount, int latentDim, int count, _In_ int * fieldIndices, _In_ int * featureIndices, _In_ float * featureValues,
->>>>>>> 6c762d87b5a9c19ab2b27312e1f66f1138963038
     _In_ float * linearWeights, _In_ float * latentWeights, _Inout_ float * latentSum, _Out_ float * response)
 {
     // The number of all possible fields.
