@@ -177,7 +177,8 @@ EXPORT_API(void) CalculateGradientAndUpdateNativeFma(float lambdaLinear, float l
                 if (fprime != f)
                    _g = _mm256_fmadd_ps(_sx, _q, _g);
                 else
-                   _g = _mm256_fmadd_ps(_sx, _mm256_sub_ps(_q, _mm256_mul_ps(_v, _x)), _g); //poornima: Add FMA
+                //    _g = _mm256_fmadd_ps(_sx, _mm256_sub_ps(_q, _mm256_mul_ps(_v, _x)), _g); //poornima: Add FMA
+                  _g = _mm256_fmadd_ps(_sx, _mm256_fnmadd_ps(_v, _x, _q), _g);
                 _g = _mm256_mul_ps(_wei, _g);
 
                 // Accumulate the gradient of latent vectors.
