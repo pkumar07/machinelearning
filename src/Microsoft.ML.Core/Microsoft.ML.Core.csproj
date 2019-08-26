@@ -6,6 +6,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>CORECLR</DefineConstants>
     <RootNamespace>Microsoft.ML</RootNamespace>
+    <DebugType>pdbonly</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

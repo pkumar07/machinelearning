@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <IncludeInPackage>Microsoft.ML.Recommender</IncludeInPackage>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>pdbonly</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
