@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using BenchmarkDotNet.Attributes;
+using Microsoft.ML.Benchmarks.Harness;
 using Microsoft.ML.Calibrators;
 using Microsoft.ML.Data;
 using Microsoft.ML.TestFramework;
@@ -9,11 +11,13 @@ using Microsoft.ML.Trainers;
 
 namespace Microsoft.ML.Benchmarks
 {
+    [CIBenchmark]
     public class KMeansAndLogisticRegressionBench
     {
         private readonly string _dataPath = BaseTestClass.GetDataPath("adult.tiny.with-schema.txt");
 
-        public void TrainKMeansAndLR()
+        [Benchmark]
+        public CalibratedModelParametersBase<LinearBinaryModelParameters, PlattCalibrator> TrainKMeansAndLR()
         {
             var ml = new MLContext(seed: 1);
             // Pipeline
@@ -33,11 +37,14 @@ namespace Microsoft.ML.Benchmarks
             var estimatorPipeline = ml.Transforms.Categorical.OneHotEncoding("CatFeatures")
                 .Append(ml.Transforms.NormalizeMinMax("NumFeatures"))
                 .Append(ml.Transforms.Concatenate("Features", "NumFeatures", "CatFeatures"))
-                .Append(ml.Clustering.Trainers.KMeans("Features"));
+                .Append(ml.Clustering.Trainers.KMeans("Features"))
+                .Append(ml.Transforms.Concatenate("Features", "Features", "Score"))
+                .Append(ml.BinaryClassification.Trainers.LbfgsLogisticRegression(
+                    new LbfgsLogisticRegressionBinaryTrainer.Options { EnforceNonNegativity = true, OptimizationTolerance = 1e-3f, }));
 
             var model = estimatorPipeline.Fit(input);
             // Return the last model in the chain.
-            //return model.LastTransformer.Model;
+            return model.LastTransformer.Model;
         }
     }
 }

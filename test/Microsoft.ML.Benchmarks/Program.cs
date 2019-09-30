@@ -14,7 +14,7 @@ namespace Microsoft.ML.Benchmarks
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            KMeansAndLogisticRegressionBench benchmark = new KMeansAndLogisticRegressionBench();
+            KMeansHiggs benchmark = new KMeansHiggs();
             benchmark.TrainKMeansAndLR();
 
             Console.WriteLine("Press any key");
