@@ -15,7 +15,11 @@ namespace Microsoft.ML.Benchmarks
         static void Main(string[] args)
         {
             KMeansHiggs benchmark = new KMeansHiggs();
+            benchmark.TrainKMeansAndLRMaml();
             benchmark.TrainKMeansAndLR();
+
+            MatrixFactorizationCustom custom = new MatrixFactorizationCustom();
+            //custom.TrainMatrixFactorizationModel();
 
             Console.WriteLine("Press any key");
          }
